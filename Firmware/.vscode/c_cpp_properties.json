@@ -1,0 +1,18 @@
+    {
+        "configurations": [
+            {
+                "name": "STM32G431",
+                "includePath": [
+                    "${workspaceFolder}/**"
+                ],
+                "defines": [
+                    "STM32G431xx"
+                ],
+                "compilerPath": "C:/CTOOLS/mingw32/bin/g++.exe",
+                "cStandard": "c11",
+                "cppStandard": "c++17",
+                "intelliSenseMode": "windows-gcc-x86"
+            }
+        ],
+        "version": 4
+    }
