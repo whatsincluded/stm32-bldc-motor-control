@@ -33,11 +33,10 @@ int main(void)
 
   /* Configure the system clock */
   SystemClock_Config();
-
+  PWM_Init();
 
   while (1)
   {
-
   }
 
 }
