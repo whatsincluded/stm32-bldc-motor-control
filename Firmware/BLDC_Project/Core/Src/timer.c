@@ -85,8 +85,8 @@ void PWM_Init(void)
     TIM1->CCMR2 |= 0x6U<<TIM_CCMR2_OC3M_Pos;
 
     /* ARR/CCR preload enable */
-    TIM1->CR1 |= TIM_CR1_ARPE;
-    TIM1->CCMR1 |= TIM_CCMR1_OC1PE | TIM_CCMR1_OC2PE;
+    TIM1->CR1 |= TIM_CR1_ARPE;  //ARR preload enable
+    TIM1->CCMR1 |= TIM_CCMR1_OC1PE | TIM_CCMR1_OC2PE; // CCR preload enable
     TIM1->CCMR2 |= TIM_CCMR2_OC3PE;
 
     /* All PWM idle states = LOW */
@@ -124,4 +124,28 @@ void PWM_Init(void)
     TIM1->CR2 |= TIM_CR2_CCPC;
 
     TIM1->CR1 |= TIM_CR1_CEN;
+}
+
+
+void PWM_Enable(void)
+{
+    TIM1->BDTR |= TIM_BDTR_MOE;
+}
+
+void PWM_Disable(void)
+{
+    TIM1->BDTR &=~ TIM_BDTR_MOE;
+}
+
+void PWM_SetDuty(uint16_t duty)
+{
+    if(duty > PWM_ARR_VALUE)
+    {
+        duty = PWM_ARR_VALUE;
+    }
+
+    TIM1->CCR1 = duty;
+    TIM1->CCR2 = duty;
+    TIM1->CCR3 = duty;
+    
 }
