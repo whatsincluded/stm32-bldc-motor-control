@@ -18,6 +18,8 @@
 /* USER CODE END Header */
 /* Includes ------------------------------------------------------------------*/
 #include "main.h"
+#include "hall_sensor.h"
+#include "timer.h"
 
 
 void SystemClock_Config(void);
@@ -30,13 +32,15 @@ void SystemClock_Config(void);
 int main(void)
 {
 
-
   /* Configure the system clock */
   SystemClock_Config();
   PWM_Init();
+  HallSensor_Init();
+  
 
   while (1)
   {
+    
   }
 
 }

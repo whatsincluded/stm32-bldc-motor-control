@@ -39,42 +39,7 @@ uint8_t HallSensor_Read(void)
 
 }
 
-void HallSensor_Update(uint8_t hall)
-{
-    switch(hall)
-    {
-        case 0b001:
-        {
-            break;
-        }
-        case 0b010:
-        {
-            break;
-        }
-        case 0b011:
-        {
-            break;
-        }
-        case 0b100:
-        {
-            break;
-        }
-        case 0b101:
-        {
-            break;
-        }
-        case 0b110:
-        {
-            break;
-        }
-        default:
-        {
-            //fault
-            break;
-        }
 
-    }
-}
 
 
 
@@ -87,11 +52,10 @@ void EXTI9_5_IRQHandler(void)
         return;
     }
         
-
     EXTI->PR1 = pending;
 
     uint8_t hall = HallSensor_Read();
 
-    HallSensor_Update(hall);
+    Commutation_Update(hall);
 
 }
