@@ -137,15 +137,3 @@ void PWM_Disable(void)
     TIM1->BDTR &=~ TIM_BDTR_MOE;
 }
 
-void PWM_SetDuty(uint16_t duty)
-{
-    if(duty > PWM_ARR_VALUE)
-    {
-        duty = PWM_ARR_VALUE;
-    }
-
-    TIM1->CCR1 = duty;
-    TIM1->CCR2 = duty;
-    TIM1->CCR3 = duty;
-    
-}

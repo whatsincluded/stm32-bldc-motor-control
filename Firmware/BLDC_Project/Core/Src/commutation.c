@@ -8,7 +8,13 @@
 #define COMM_WH_UL (TIM_CCER_CC3E | TIM_CCER_CC1NE)
 #define COMM_WH_VL (TIM_CCER_CC3E | TIM_CCER_CC2NE)
 
+
+#define DUTY_SCALE 1000U
+static uint16_t target_ccr = 0U;
+
+
 static void Commutation_SetOutputs(uint32_t outputs);
+static void Commutation_ConfigureCCR(uint32_t outputs);
 
 void Commutation_Update(uint8_t hall)
 {
@@ -56,6 +62,7 @@ void Commutation_Update(uint8_t hall)
 
 static void Commutation_SetOutputs(uint32_t outputs)
 {
+    Commutation_ConfigureCCR(outputs);
     uint32_t ccer = TIM1->CCER;
     ccer &=~COMMUTATION_OUTPUT_MASK;
     ccer |= outputs & COMMUTATION_OUTPUT_MASK;
@@ -63,8 +70,41 @@ static void Commutation_SetOutputs(uint32_t outputs)
     TIM1->EGR = TIM_EGR_COMG;
 }
 
+static void Commutation_ConfigureCCR(uint32_t outputs)
+{
+    TIM1->CCR1 = 0U;
+    TIM1->CCR2 = 0U;
+    TIM1->CCR3 = 0U;
+
+    if((outputs & TIM_CCER_CC1E) != 0U)
+    {
+        TIM1->CCR1 = target_ccr;
+    }
+    else if((outputs & TIM_CCER_CC2E) != 0U)
+    {
+        TIM1->CCR2 = target_ccr;
+    }
+    else if((outputs & TIM_CCER_CC3E) != 0U)
+    {
+        TIM1->CCR3 = target_ccr;
+    }
+}
+
 
 void Commutation_Stop(void)
 {
     PWM_Disable();
 }
+
+void Commutation_SetDuty(uint16_t duty_permille)
+{
+    if(duty_permille > DUTY_SCALE)
+    {
+        duty_permille = DUTY_SCALE;
+    }
+
+    target_ccr = (uint16_t)(((uint32_t)duty_permille*TIM1->ARR)/DUTY_SCALE);
+}
+
+
+    

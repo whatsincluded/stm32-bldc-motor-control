@@ -37,6 +37,10 @@ int main(void)
   PWM_Init();
   HallSensor_Init();
   
+  Commutation_SetDuty(200U);
+  Commutation_Update(HallSensor_Read());
+  PWM_Enable();
+  
 
   while (1)
   {

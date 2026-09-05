@@ -13,5 +13,5 @@
 void PWM_Init(void);
 void PWM_Enable(void);
 void PWM_Disable(void);
-void PWM_SetDuty(uint16_t duty);
+
 #endif /* INC_TIMER_H_ */
