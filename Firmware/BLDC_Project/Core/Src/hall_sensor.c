@@ -1,6 +1,6 @@
 #include "hall_sensor.h"
 
-
+volatile uint8_t hall = 0;
 
 void HallSensor_Init(void)
 {
@@ -34,8 +34,8 @@ uint8_t HallSensor_Read(void)
     uint8_t hallA = (gpio >> 6) & 1U;
     uint8_t hallB = (gpio >> 7) & 1U;
     uint8_t hallC = (gpio >> 8) & 1U;
-
-    return (uint8_t) ((hallA << 2) | (hallB << 1) | (hallC << 0));
+    hall = (uint8_t) ((hallA << 2) | (hallB << 1) | (hallC << 0));
+    return hall;
 
 }
 
@@ -54,8 +54,8 @@ void EXTI9_5_IRQHandler(void)
         
     EXTI->PR1 = pending;
 
-    uint8_t hall = HallSensor_Read();
+    uint8_t hall_state = HallSensor_Read();
 
-    Commutation_Update(hall);
+    Commutation_Update(hall_state);
 
 }

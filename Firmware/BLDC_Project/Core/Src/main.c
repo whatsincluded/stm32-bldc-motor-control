@@ -33,6 +33,7 @@ int main(void)
 {
 
   /* Configure the system clock */
+  HAL_Init();
   SystemClock_Config();
   PWM_Init();
   HallSensor_Init();
