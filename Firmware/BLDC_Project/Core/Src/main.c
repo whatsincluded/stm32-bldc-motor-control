@@ -20,7 +20,8 @@
 #include "main.h"
 #include "hall_sensor.h"
 #include "timer.h"
-
+#include "motor_control.h"
+#include "commutation.h"
 
 void SystemClock_Config(void);
 
@@ -37,10 +38,11 @@ int main(void)
   SystemClock_Config();
   PWM_Init();
   HallSensor_Init();
+
   
   Commutation_SetDuty(200U);
-  Commutation_Update(HallSensor_Read());
-  PWM_Enable();
+  Motor_ProcessHall(HallSensor_Read());
+  HallSensor_EnableIRQ();
   
 
   while (1)

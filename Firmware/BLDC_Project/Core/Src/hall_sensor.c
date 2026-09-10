@@ -1,9 +1,13 @@
 #include "hall_sensor.h"
+#include "commutation.h"
+#include "motor_control.h"
 
 volatile uint8_t hall = 0;
 
 void HallSensor_Init(void)
 {
+    NVIC_DisableIRQ(EXTI9_5_IRQn);
+
     RCC->AHB2ENR |= RCC_AHB2ENR_GPIOBEN;
     RCC->APB2ENR |= RCC_APB2ENR_SYSCFGEN;
     // PB6 PB7 PB8 -> 홀 센서 EXTI로 사용 
@@ -25,7 +29,12 @@ void HallSensor_Init(void)
 
     EXTI->IMR1 |= (EXTI_IMR1_IM6 | EXTI_IMR1_IM7 | EXTI_IMR1_IM8);
 
-    NVIC_EnableIRQ(EXTI9_5_IRQn);
+    EXTI->PR1 = EXTI_PR1_PIF6 |
+                EXTI_PR1_PIF7 |
+                EXTI_PR1_PIF8;
+
+    NVIC_ClearPendingIRQ(EXTI9_5_IRQn);
+    
 }
 
 uint8_t HallSensor_Read(void)
@@ -36,10 +45,7 @@ uint8_t HallSensor_Read(void)
     uint8_t hallC = (gpio >> 8) & 1U;
     hall = (uint8_t) ((hallA << 2) | (hallB << 1) | (hallC << 0));
     return hall;
-
 }
-
-
 
 
 
@@ -56,6 +62,11 @@ void EXTI9_5_IRQHandler(void)
 
     uint8_t hall_state = HallSensor_Read();
 
-    Commutation_Update(hall_state);
+    Motor_ProcessHall(hall_state);
 
+}
+
+void HallSensor_EnableIRQ(void)
+{
+    NVIC_EnableIRQ(EXTI9_5_IRQn);
 }

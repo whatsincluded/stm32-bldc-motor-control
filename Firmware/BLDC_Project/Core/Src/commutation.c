@@ -1,4 +1,7 @@
 #include "commutation.h"
+#include "motor_control.h"
+
+
 #define COMMUTATION_OUTPUT_MASK (TIM_CCER_CC1E | TIM_CCER_CC1NE |TIM_CCER_CC2E | TIM_CCER_CC2NE | TIM_CCER_CC3E | TIM_CCER_CC3NE)
 
 #define COMM_UH_VL (TIM_CCER_CC1E | TIM_CCER_CC2NE)
@@ -13,11 +16,17 @@
 static uint16_t target_ccr = 0U;
 
 
+
 static void Commutation_SetOutputs(uint32_t outputs);
 static void Commutation_ConfigureCCR(uint32_t outputs);
 
 void Commutation_Update(uint8_t hall)
 {
+    if(Motor_GetState() == MOTOR_FAULT)
+    {
+        return;
+    }
+
     switch(hall)
     {
         case 0b001:
@@ -53,7 +62,7 @@ void Commutation_Update(uint8_t hall)
         default:
         {
             //fault
-            Commutation_Stop();
+            Motor_Trip(MOTOR_FAULT_HALL_INVALID);
             break;
         }
 
@@ -91,10 +100,6 @@ static void Commutation_ConfigureCCR(uint32_t outputs)
 }
 
 
-void Commutation_Stop(void)
-{
-    PWM_Disable();
-}
 
 void Commutation_SetDuty(uint16_t duty_permille)
 {
