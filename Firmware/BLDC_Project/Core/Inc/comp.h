@@ -5,4 +5,5 @@
 
 
 void Comp_Init(void);
+void Comp_Enable(void);
 #endif /* INC_COMP_H_ */

@@ -20,6 +20,7 @@
 /* Includes ------------------------------------------------------------------*/
 #include "main.h"
 #include "stm32g4xx_it.h"
+#include "motor_control.h"
 /* Private includes ----------------------------------------------------------*/
 /* USER CODE BEGIN Includes */
 /* USER CODE END Includes */
@@ -199,5 +200,14 @@ void SysTick_Handler(void)
 /******************************************************************************/
 
 /* USER CODE BEGIN 1 */
+void TIM1_BRK_TIM15_IRQHandler(void)
+{
+  if(((TIM1->DIER & TIM_DIER_BIE) != 0U) && ((TIM1->SR & TIM_SR_BIF) != 0U))
+  {
+    /* fault가 지속돼도 인터럽트가 반복되지 않도록 */
+    TIM1->DIER &= ~TIM_DIER_BIE;
+    Motor_Trip(MOTOR_FAULT_OVERCURRENT);
+  }
+}
 
 /* USER CODE END 1 */

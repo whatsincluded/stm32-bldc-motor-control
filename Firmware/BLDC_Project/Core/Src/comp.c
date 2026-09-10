@@ -20,5 +20,32 @@ void Comp_Init(void)
     COMP2->CSR &=~ COMP_CSR_INPSEL;
     COMP4->CSR &=~ COMP_CSR_INPSEL;
 
+    /* (-) 입력 선택 필드 초기화 */
+    COMP1->CSR &=~COMP_CSR_INMSEL_Msk;
+    COMP2->CSR &=~COMP_CSR_INMSEL_Msk;
+    COMP4->CSR &=~COMP_CSR_INMSEL_Msk;
 
+    /* INMSEL = 100: 내부 DAC3 연결 */
+    COMP1->CSR |= (4U << COMP_CSR_INMSEL_Pos);
+    COMP2->CSR |= (4U << COMP_CSR_INMSEL_Pos);
+    COMP4->CSR |= (4U << COMP_CSR_INMSEL_Pos);
+
+    /* 비반전 출력: (+) 입력 > (-) 입력이면 HIGH */
+    COMP1->CSR &=~COMP_CSR_POLARITY_Msk;
+    COMP2->CSR &=~COMP_CSR_POLARITY_Msk;
+    COMP4->CSR &=~COMP_CSR_POLARITY_Msk;
+
+    /* 정적 특성 검증용: hysteresis와 blanking 없음 */
+    COMP1->CSR &= ~(COMP_CSR_HYST_Msk | COMP_CSR_BLANKING_Msk);
+    COMP2->CSR &= ~(COMP_CSR_HYST_Msk | COMP_CSR_BLANKING_Msk);
+    COMP4->CSR &= ~(COMP_CSR_HYST_Msk | COMP_CSR_BLANKING_Msk);
+
+
+}
+
+void Comp_Enable(void)
+{
+    COMP1->CSR |= COMP_CSR_EN;
+    COMP2->CSR |= COMP_CSR_EN;
+    COMP4->CSR |= COMP_CSR_EN;
 }

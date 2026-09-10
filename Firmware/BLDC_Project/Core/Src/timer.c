@@ -137,3 +137,26 @@ void PWM_Disable(void)
     TIM1->BDTR &=~ TIM_BDTR_MOE;
 }
 
+void PWM_BreakInit(void)
+{
+    /* 초기화 중 출력과 자동 재시작 금지 */
+    TIM1->BDTR &=~(TIM_BDTR_MOE | TIM_BDTR_AOE);
+
+    /*
+     * 내부 COMP1/2/4 → Break 연결
+     * 외부 BKIN 사용 안 함, COMP 입력 polarity 비반전
+     * 다른 AF1 기능을 사용하지 않는 현재 구성 기준
+     */
+    TIM1->AF1 = TIM1_AF1_BKCMP1E |
+                TIM1_AF1_BKCMP2E |
+                TIM1_AF1_BKCMP4E;
+
+    /* 우선 필터 없이 보호 경로 검증 */
+    TIM1->BDTR &= ~TIM_BDTR_BKF_Msk;
+
+    /* COMP 출력 HIGH일 때 Break 발생 */
+    TIM1->BDTR |= TIM_BDTR_BKP |
+                  TIM_BDTR_OSSI |
+                  TIM_BDTR_OSSR |
+                  TIM_BDTR_BKE;
+}

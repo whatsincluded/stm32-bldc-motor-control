@@ -22,9 +22,11 @@
 #include "timer.h"
 #include "motor_control.h"
 #include "commutation.h"
+#include "comp.h"
+#include "dac.h"
 
 void SystemClock_Config(void);
-
+static void Analog_Wait10us(void);
 
 /**
   * @brief  The application entry point.
@@ -32,18 +34,50 @@ void SystemClock_Config(void);
   */
 int main(void)
 {
-
-  /* Configure the system clock */
   HAL_Init();
   SystemClock_Config();
-  PWM_Init();
-  HallSensor_Init();
 
-  
+  /* CPU cycle counter 활성화 */
+  CoreDebug->DEMCR |= CoreDebug_DEMCR_TRCENA_Msk;
+  DWT->CYCCNT = 0U;
+  DWT->CTRL |= DWT_CTRL_CYCCNTENA_Msk;
+
+  /* PWM 출력은 계속 OFF */
+  PWM_Init();
+  PWM_Disable();
+
+  /* 보호 설정 중 Break ISR 실행 방지 */
+  NVIC_DisableIRQ(TIM1_BRK_TIM15_IRQn);
+  TIM1->DIER &= ~TIM_DIER_BIE;
+
+  /* COMP 설정만 수행 */
+  Comp_Init();
+
+  /* 현재 DAC_Init()은 채널 활성화까지 수행함 */
+  DAC_Init();
+  Analog_Wait10us();
+
+  /* 기준 전압이 준비된 뒤 COMP 활성화 */
+  Comp_Enable();
+  Analog_Wait10us();
+
+  /* 내부 과전류 신호를 TIM1 Break에 연결 */
+  PWM_BreakInit();
+
+  /* Break가 Hall IRQ보다 높은 우선순위 */
+  NVIC_SetPriority(TIM1_BRK_TIM15_IRQn, 0U);
+  NVIC_SetPriority(EXTI9_5_IRQn, 1U);
+
+  /* 이미 발생한 BIF는 지우지 않음 */
+  TIM1->DIER |= TIM_DIER_BIE;
+  NVIC_EnableIRQ(TIM1_BRK_TIM15_IRQn);
+
+  /* Hall 초기 처리 후 인터럽트 활성화 */
+  HallSensor_Init();
   Commutation_SetDuty(200U);
   Motor_ProcessHall(HallSensor_Read());
   HallSensor_EnableIRQ();
-  
+    
 
   while (1)
   {
@@ -51,6 +85,17 @@ int main(void)
   }
 
 }
+
+
+static void Analog_Wait10us(void)
+{
+    uint32_t start = DWT->CYCCNT;
+    uint32_t ticks = SystemCoreClock / 100000U;
+
+    while ((uint32_t)(DWT->CYCCNT - start) < ticks) {
+    }
+}
+
 
 /**
   * @brief System Clock Configuration
