@@ -10,8 +10,8 @@
 
 #include "stm32g4xx.h"
 
-void PWM_Init(void);
-void PWM_Enable(void);
-void PWM_Disable(void);
-void PWM_BreakInit(void);
+void TIM1_PWM_Init(void);
+void TIM1_PWM_Enable(void);
+void TIM1_PWM_Disable(void);
+void TIM1_BreakInit(void);
 #endif /* INC_TIMER_H_ */

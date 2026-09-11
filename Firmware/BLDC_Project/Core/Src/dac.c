@@ -28,13 +28,3 @@ void DAC_Init(void)
     DAC3->CR |= DAC_CR_EN1 | DAC_CR_EN2;
 
 }
-
-void DAC_SetThreshold(void)
-{
-    
-}
-
-void DAC_Enable(void)
-{
-
-}

@@ -17,7 +17,7 @@
 //#define TIM1_DTG_VALUE ((PWM_DEADTIME_NS * TIM1_CLOCK_HZ + 999999999UL) / 1000000000UL)
 
 
-void PWM_Init(void)
+void TIM1_PWM_Init(void)
 {   /*
     CH1 → PA8  CH1N → PC13
     CH2 → PA9  CH2N → PA12
@@ -127,17 +127,17 @@ void PWM_Init(void)
 }
 
 
-void PWM_Enable(void)
+void TIM1_PWM_Enable(void)
 {
     TIM1->BDTR |= TIM_BDTR_MOE;
 }
 
-void PWM_Disable(void)
+void TIM1_PWM_Disable(void)
 {
     TIM1->BDTR &=~ TIM_BDTR_MOE;
 }
 
-void PWM_BreakInit(void)
+void TIM1_BreakInit(void)
 {
     /* 초기화 중 출력과 자동 재시작 금지 */
     TIM1->BDTR &=~(TIM_BDTR_MOE | TIM_BDTR_AOE);
@@ -151,7 +151,7 @@ void PWM_BreakInit(void)
                 TIM1_AF1_BKCMP2E |
                 TIM1_AF1_BKCMP4E;
 
-    /* 우선 필터 없이 보호 경로 검증 */
+    /* 우선 필터 없이 보호 경로 검증 BKF -> Break Filter*/
     TIM1->BDTR &= ~TIM_BDTR_BKF_Msk;
 
     /* COMP 출력 HIGH일 때 Break 발생 */

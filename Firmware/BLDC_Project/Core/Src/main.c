@@ -43,8 +43,8 @@ int main(void)
   DWT->CTRL |= DWT_CTRL_CYCCNTENA_Msk;
 
   /* PWM 출력은 계속 OFF */
-  PWM_Init();
-  PWM_Disable();
+  TIM1_PWM_Init();
+  TIM1_PWM_Disable();
 
   /* 보호 설정 중 Break ISR 실행 방지 */
   NVIC_DisableIRQ(TIM1_BRK_TIM15_IRQn);
@@ -62,7 +62,7 @@ int main(void)
   Analog_Wait10us();
 
   /* 내부 과전류 신호를 TIM1 Break에 연결 */
-  PWM_BreakInit();
+  TIM1_BreakInit();
 
   /* Break가 Hall IRQ보다 높은 우선순위 */
   NVIC_SetPriority(TIM1_BRK_TIM15_IRQn, 0U);

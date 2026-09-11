@@ -31,7 +31,7 @@ void Motor_Stop(void)
     uint32_t primask = __get_PRIMASK();
     __disable_irq();
 
-    PWM_Disable();
+    TIM1_PWM_Disable();
 
     if(motor_state != MOTOR_FAULT)
     {
@@ -48,7 +48,7 @@ void Motor_Trip(MotorFault reason)
     uint32_t primask = __get_PRIMASK();
     __disable_irq();
 
-    PWM_Disable();
+    TIM1_PWM_Disable();
     motor_fault_flags |= (uint32_t) reason;
     motor_state = MOTOR_FAULT;
 
