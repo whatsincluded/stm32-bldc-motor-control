@@ -10,7 +10,9 @@ typedef enum{
     MOTOR_STOPPED = 0,
     MOTOR_STARTING,
     MOTOR_RUNNING,
-    MOTOR_FAULT
+    MOTOR_FAULT,
+    MOTOR_BOOTSTRAP,   /* 상단 OFF, 하단 U/V/W를 순서대로 충전 */
+    MOTOR_START_WAIT   /* 충전 출력 차단 후 정류 시작 전 대기 */
 }MotorState;
 
 typedef enum{
@@ -26,9 +28,11 @@ typedef enum{
 MotorState Motor_GetState(void);
 uint32_t Motor_GetFaults(void);
 void Motor_ProcessHall(uint8_t hall_state);
+void Motor_Update(void);
+uint8_t Motor_ClearFault(void);
 
 void Motor_Stop(void);
 void Motor_Trip(MotorFault reason);
-
+void Motor_Start(void);
 
 #endif /* INC_MOTOR_CONTROL_H_ */

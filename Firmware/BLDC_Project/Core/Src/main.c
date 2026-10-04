@@ -28,6 +28,8 @@
 void SystemClock_Config(void);
 static void Analog_Wait10us(void);
 
+volatile uint8_t fault_clear_request = 0U;
+volatile uint8_t motor_start_request = 0U;
 /**
   * @brief  The application entry point.
   * @retval int
@@ -61,6 +63,10 @@ int main(void)
   Comp_Enable();
   Analog_Wait10us();
 
+  /* COMP 초기 안정화 후 상승 에지 기록을 시작한다.
+   * COMP 인터럽트는 사용하지 않고 기존 TIM1 Break 차단을 유지한다. */
+  Comp_ArmFaultEdgeCapture();
+
   /* 내부 과전류 신호를 TIM1 Break에 연결 */
   TIM1_BreakInit();
 
@@ -74,14 +80,25 @@ int main(void)
 
   /* Hall 초기 처리 후 인터럽트 활성화 */
   HallSensor_Init();
-  Commutation_SetDuty(200U);
-  Motor_ProcessHall(HallSensor_Read());
+  /* 첫 구동 시험용 듀티 5%. 모터 상전류를 5%로 제한한다는 뜻은 아니다. */
+  Commutation_SetDuty(50U);
   HallSensor_EnableIRQ();
     
 
   while (1)
   {
-    
+    Motor_Update();
+    if (motor_start_request != 0U)
+    {
+        motor_start_request = 0U;
+        Motor_Start();
+    }
+
+    if(fault_clear_request != 0U)
+    {
+      fault_clear_request = 0U;
+      Motor_ClearFault();
+    }
   }
 
 }
